@@ -1,9 +1,14 @@
 import sqlite3
 import re
 import hashlib
-import ConfigParser
-config = ConfigParser.RawConfigParser()
-config.read('config')
+import json
+
+try:
+    conf_file = open('config.json', 'r')
+    config = json.load(conf_file)
+except IOError:
+    print("Could not open file")
+    config = None
 
 def raw_to_canonical_phone(value):
     phone_digits_only = re.sub(r'\D', "", value) # Remove non-digits
@@ -65,13 +70,13 @@ for row in contacts_db.fetchall():
         contacts[record_id]["phone_canonical"] = phone_canonical
         contacts[record_id]["phone_hash"] = phone_hash
         contact_phone_canonical_index[phone_canonical] = contacts[record_id]
-        print("Setting phone index \"%s\" -> %s" % (phone_canonical, record_id))
+        # print("Setting phone index \"%s\" -> %s" % (phone_canonical, record_id))
 
     elif row['property'] == 4:
         # Assert: this is an email record
         contacts[record_id]["email"] = value
         contact_email_index[value] = contacts[record_id]
-        print("Setting email index \"%s\" -> %s" % (value.encode('utf8'), record_id))
+        # print("Setting email index \"%s\" -> %s" % (value.encode('utf8'), record_id))
 
     else:
         # Return early, we don't care about non-email or non-phone records.
@@ -86,10 +91,10 @@ for row in contacts_db.fetchall():
     contacts[record_id]["last"] = last
     contacts[record_id]["organization"] = organization
 
-    print("\tFirst: %s\n\tLast: %s\n\tOrg: %s" % \
-        (contacts[record_id]["first"].encode('utf8'), \
-        contacts[record_id]["last"].encode('utf8'), \
-        contacts[record_id]["organization"].encode('utf8')))
+    # print("\tFirst: %s\n\tLast: %s\n\tOrg: %s" % \
+    #     (contacts[record_id]["first"].encode('utf8'), \
+    #     contacts[record_id]["last"].encode('utf8'), \
+    #     contacts[record_id]["organization"].encode('utf8')))
 
 
 messages_conn = sqlite3.connect('sms_database-2015-08-31.sqlite3')
