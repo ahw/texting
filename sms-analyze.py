@@ -89,31 +89,6 @@ for row in contacts_db.fetchall():
         contacts[record_id]["organization"].encode('utf8')))
 
 
-    # if re.match(r'^1\d{10}$', phone):
-    #     # U.S. number - country code 1
-    #     key = "+%s" % phone
-    # elif re.match(r'^\d{10}$', phone):
-    #     # No country code, assume U.S.
-    #     key = "+1%s" % phone
-    # elif re.match(r'^331\d{4}$', phone):
-    #     # An implicit 315 number. How quaint.
-    #     key = "+1315%s" % phone
-    # else:
-    #     # Anything else. International number, invalid phone numbers, etc.
-    #     key = "+%s" % phone
-
-    # phone_to_contact[key] = {"first": first, "last": last, "phone_hash": phone_hash}
-
-    # Python might try to encode these into ASCII unless we're deliberate
-    # print("\"%s %s\" %s %s" % \
-    #     (first.encode('utf8'), \
-    #     last.encode('utf8'), \
-    #     phone.encode('utf8'), \
-    #     key.encode('utf8')))
-
-print(contact_phone_canonical_index)
-print(contact_email_index)
-
 messages_conn = sqlite3.connect('sms_database-2015-08-31.sqlite3')
 messages_conn.row_factory = sqlite3.Row
 messages_db = messages_conn.cursor()
@@ -141,11 +116,6 @@ for row in messages_db.fetchall():
     contact_id = row['id']
     text = row['text']
     arrow = "<-" if row['is_from_me'] else "->"
-    # try:
-    #     phone_hash = phone_to_contact[phone]["phone_hash"]
-    # except KeyError:
-    #     print("Error!")
-    #     print(phone)
 
     if contact_id in contact_phone_canonical_index:
         print("HIT %s in contact_phone_canonical_index" % contact_id)
@@ -157,21 +127,3 @@ for row in messages_db.fetchall():
             print("\t text was %s" % text.encode('utf8'))
 
     # first,last = [phone_to_contact[phone][k] for k in ('first','last')]
-
-    # if text == None:
-    #     text = "NO_TEXT (image?)"
-    # else:
-    #     if phone == None:
-    #         phone = "XX"
-    #     if text == None:
-    #         text = "NO_TEXT (image?)"
-
-
-    # print("%s %s (%s) [%s] %s %s" % \
-    #     (first.encode('utf8'), \
-    #     last.encode('utf8'), \
-    #     phone_hash, \
-    #     phone.encode('utf8'), \
-    #     arrow, \
-    #     text.encode('utf8')))
-    #     print("Phone number %s does not have a contact %s" % (phone.encode('utf8'), text.encode('utf8')))
