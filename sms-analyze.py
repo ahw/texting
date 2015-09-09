@@ -1,6 +1,9 @@
 import sqlite3
 import re
 import hashlib
+import ConfigParser
+config = ConfigParser.RawConfigParser()
+config.read('config')
 
 def raw_to_canonical_phone(value):
     phone_digits_only = re.sub(r'\D', "", value) # Remove non-digits
