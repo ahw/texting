@@ -3,6 +3,7 @@ import re
 import hashlib
 import json
 import matplotlib.pyplot as plot
+from datetime import datetime, date, time
 
 try:
     conf_file = open('config.json', 'r')
@@ -114,7 +115,7 @@ messages_db.execute('''
         handle.ROWID,
         handle.id,
         message.other_handle,
-        -- datetime(message.date + 978307200, 'unixepoch', 'localtime') AS 'time',
+        datetime(message.date + 978307200, 'unixepoch', 'localtime') AS 'time',
         message.text,
         message.is_from_me
     FROM message JOIN handle ON (message.handle_id = handle.ROWID)
@@ -132,9 +133,12 @@ messages_db.execute('''
 
 incoming_message_lengths = []
 outgoing_message_lengths = []
+message_counts_per_day = {}
+
 for row in messages_db.fetchall():
     contact_id = row['id']
     text = row['text']
+
     arrow = "<-" if row['is_from_me'] else "->"
 
     if contact_id in contact_phone_canonical_index:
@@ -158,6 +162,13 @@ for row in messages_db.fetchall():
             length = len(text)
 
         incoming_message_lengths.append(length)
+
+    datetime_string = datetime.strptime(row['time'], "%Y-%m-%d %H:%M:%S")
+    datestring = datetime_string.strftime("%Y-%m-%d")
+    if datestring in message_counts_per_day:
+        message_counts_per_day[datestring] = message_counts_per_day[datestring] + 1
+    else:
+        message_counts_per_day[datestring] = 1
 
 # Aspect ratio
 plot.figure(figsize=(12, 9))  
@@ -195,5 +206,8 @@ plot.text(1300, -5000, "SMS Messages", fontsize=10)
 # Just change the file extension in this call.  
 # bbox_inches="tight" removes all the extra whitespace on the edges of your plot.  
 plot.savefig("character-count-incoming-outgoing-sms.png", bbox_inches="tight");
+
+print(message_counts_per_day)
+plot.figure(2)
 
 plot.show()

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# vimhook.bufferoutput = false
-# vimhook.async
+# vimhook.bufferoutput = true
+# vimhook.async = false
 
 # xvimhook.bufferoutput.feedkeys = G
 
