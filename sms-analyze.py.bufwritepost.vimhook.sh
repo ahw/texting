@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# vimhook.bufferoutput
-# vimhook.bufferoutput.feedkeys = G
+# vimhook.bufferoutput = false
+# vimhook.async
+
+# xvimhook.bufferoutput.feedkeys = G
 
 python $1

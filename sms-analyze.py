@@ -2,6 +2,7 @@ import sqlite3
 import re
 import hashlib
 import json
+import matplotlib.pyplot as plot
 
 try:
     conf_file = open('config.json', 'r')
@@ -10,6 +11,14 @@ except IOError:
     print("Could not open file")
     config = None
 
+def myprint(value):
+    # print(value)
+    return
+
+# Turn a poorly-formatted phone number into it's canonical format:
+# [+] + [country code] + [area code] + [local number]
+#
+# Example: +15551234567
 def raw_to_canonical_phone(value):
     phone_digits_only = re.sub(r'\D', "", value) # Remove non-digits
 
@@ -110,6 +119,7 @@ messages_db.execute('''
         message.is_from_me
     FROM message JOIN handle ON (message.handle_id = handle.ROWID)
     WHERE
+        -- handle.ROWID IN (?)
         -- handle.ROWID IN (147, 186)
         -- time > DATE('2014-08-31')
         -- AND time < DATE('2015-08-31')
@@ -120,18 +130,70 @@ messages_db.execute('''
     ORDER BY message.date DESC
 ''')
 
+incoming_message_lengths = []
+outgoing_message_lengths = []
 for row in messages_db.fetchall():
     contact_id = row['id']
     text = row['text']
     arrow = "<-" if row['is_from_me'] else "->"
 
     if contact_id in contact_phone_canonical_index:
-        print("HIT %s in contact_phone_canonical_index" % contact_id)
+        myprint("HIT %s in contact_phone_canonical_index" % contact_id)
     elif contact_id in contact_email_index:
-        print("HIT %s in contact_email_index" % contact_id)
+        myprint("HIT %s in contact_email_index" % contact_id)
     else:
-        print("MISS %s in either index" % contact_id)
+        myprint("MISS %s in either index" % contact_id)
         if text != None:
-            print("\t text was %s" % text.encode('utf8'))
+            myprint("\t text was %s" % text.encode('utf8'))
 
-    # first,last = [phone_to_contact[phone][k] for k in ('first','last')]
+    if row['is_from_me']:
+        length = 0
+        if (text != None):
+            length = len(text)
+
+        outgoing_message_lengths.append(length)
+    else:
+        length = 0
+        if (text != None):
+            length = len(text)
+
+        incoming_message_lengths.append(length)
+
+# Aspect ratio
+plot.figure(figsize=(12, 9))  
+
+# Remove the plot frame lines. They are unnecessary chartjunk.  
+ax = plot.subplot(111)
+ax.spines["top"].set_visible(False)
+ax.spines["right"].set_visible(False)
+
+# Ensure that the axis ticks only show up on the bottom and left of the plot.  
+# Ticks on the right and top of the plot are generally unnecessary chartjunk.  
+ax.get_xaxis().tick_bottom()  
+ax.get_yaxis().tick_left()
+
+# Make sure your axis ticks are large enough to be easily read.  
+# You don't want your viewers squinting to read your plot.  
+plot.xticks(fontsize=14)  
+plot.yticks(range(5000, 30001, 5000), fontsize=14)
+
+  
+# Along the same vein, make sure your axis labels are large  
+# enough to be easily read as well. Make them slightly larger  
+# than your axis tick labels so they stand out.  
+plot.xlabel("Character count per message", fontsize=16)  
+plot.ylabel("Frequency", fontsize=16) 
+
+plot.hist(x=outgoing_message_lengths, bins=200, alpha=0.5, range=(0, 400), linewidth=1, color='blue')
+plot.hist(x=incoming_message_lengths, bins=200, alpha=0.5, range=(0, 400), linewidth=1, color='#CC0000')
+
+# Always include your data source(s) and copyright notice!
+plot.text(1300, -5000, "SMS Messages", fontsize=10)
+
+# Finally, save the figure as a PNG.  
+# You can also save it as a PDF, JPEG, etc.  
+# Just change the file extension in this call.  
+# bbox_inches="tight" removes all the extra whitespace on the edges of your plot.  
+plot.savefig("character-count-incoming-outgoing-sms.png", bbox_inches="tight");
+
+plot.show()
