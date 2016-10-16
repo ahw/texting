@@ -16,6 +16,8 @@ Python setup
 SQLite Schema
 -------------
 
+File located at `~/Library/Application\ Support/MobileSync/Backup/02e365729661dbc3315d705c72c5a3524843eb32/3d0d7e5fb2ce288813306e4d4636395e047a3d28`
+
 [iPhone SQLite3 SMS database schema](https://s3.amazonaws.com/pd93f014/schema.sql.html)
 
 Internal Schemas
