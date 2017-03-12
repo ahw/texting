@@ -1,3 +1,15 @@
+SQLite3 Files
+-------------
+| Content    | Real Name            | Backup filename                          |
+| ---        | ---                  | ---                                      |
+| SMS        | sms.db               | 3d0d7e5fb2ce288813306e4d4636395e047a3d28 |
+| Contacts   | AddressBook.sqlitedb | 31bb7ba8914766d4ba40d6dfb6113c8b614be442 |
+| Calendar   | Calendar.sqlitedb    | 2041457d5fe04d39d0ab481178355df6781e6858 |
+| Reminders  | Calendar.sqlitedb    | 2041457d5fe04d39d0ab481178355df6781e6858 |
+| Notes      | notes.sqlite         | ca3bc056d4da0bbf88b5fb3be254f3b7147e639c |
+| Call hist. | call_history.db      | 2b2b0084a1bc3a5ac8c27afdf14afb42c61a19ca |
+| Locations  | consolidated.db      | 4096c9ec676f2847dc283405900e284a7c815836 |
+
 Python setup
 ------------
 
